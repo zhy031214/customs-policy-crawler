@@ -32,6 +32,6 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add policy_cache.json "发布历史(from_2026.01).xlsx"
+        git add policy_cache.json "发布历史(from_2025.10).xlsx"
         git diff --staged --quiet || git commit -m "Update customs policy data"
         git push

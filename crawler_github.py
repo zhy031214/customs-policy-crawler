@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-海关政策爬虫 - 海关总署政务公开3个栏目
-  栏目：最新文件 / 政策解读 / 海关法规
+海关政策爬虫 - 海关总署政务公开·最新文件栏目
+  栏目：最新文件（/customs/302249/2480148/index.html）
 缓存：policy_cache.json
-邮件附件：发布历史(from_2026.01).xlsx（超链接可点，列宽自适应）
+邮件附件：发布历史(from_2025.10).xlsx（超链接可点，列宽自适应）
 
 反爬说明：customs.gov.cn 使用加速乐(Jiasule) WAF，直接用 requests 会被 412 拦截。
 方案：Playwright 先访问首页完成 JS 挑战拿到全套 cookie，之后用 requests 带 cookie 抓取。
@@ -23,21 +23,18 @@ from openpyxl.styles import Font, Alignment
 CONFIG = {
     "output_dir": ".",
     "cache_file": "policy_cache.json",
-    "history_xlsx": "发布历史(from_2026.01).xlsx",
+    "history_xlsx": "发布历史(from_2025.10).xlsx",
 
     "base_url": "http://www.customs.gov.cn",
     "entry_url": "http://www.customs.gov.cn/",          # WAF 挑战入口（首页挑战成功率高）
     "policy_index": "http://www.customs.gov.cn/customs/302249/index.html",
 
-    # 三个栏目：路径 + 分页所需的 eportal pageId/moduleId（从栏目页分页HTML中提取）
-    # 注意：海关法规栏目页是302266，但其列表分页用的是302267
+    # 只抓"最新文件"栏目：http://www.customs.gov.cn/customs/302249/2480148/index.html
     "categories": {
         "最新文件": {"path": "/customs/302249/2480148", "eportalPageId": "2480148", "moduleId": "ba2f639c351e44d1b28c52c03eee13f8"},
-        "政策解读": {"path": "/customs/302249/302272", "eportalPageId": "302272", "moduleId": "6a23fe121a734c8c815c00447b1a2ce5"},
-        "海关法规": {"path": "/customs/302249/302266", "eportalPageId": "302267", "moduleId": "2011fa33a51144549cd2bb75cafeb4d8"},
     },
 
-    "first_start_date": "2026-01-01",
+    "first_start_date": "2025-10-29",   # 首次运行抓取最近1年
     "days_limit": 1,
     "request_delay": 0.5,
     "max_pages_first_run": 40,      # 首次运行单栏目最多翻页数（保护）
