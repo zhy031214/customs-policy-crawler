@@ -1,0 +1,37 @@
+name: Customs Policy Crawler
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4 pandas openpyxl playwright
+        python -m playwright install --with-deps chromium
+
+    - name: Run crawler
+      env:
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      run: python crawler_github.py
+
+    - name: Commit cache and Excel
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add policy_cache.json "发布历史(from_2026.01).xlsx"
+        git diff --staged --quiet || git commit -m "Update customs policy data"
+        git push
